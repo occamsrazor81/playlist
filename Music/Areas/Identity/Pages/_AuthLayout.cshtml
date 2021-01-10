@@ -1,0 +1,47 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12 bg-dark">
+        <div class="card login-logut-tab bg-dark border-light">
+            <div class="card-header bg-dark border-light">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary" href="/Identity/Account/Login">Sing In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary" href="/Identity/Account/Register">Sing Up</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        @RenderBody()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false);
+
+    <script>
+            $(function () {
+                var curr = this.location.pathname;
+                $('.nav-tabs li a').each(function () {
+                    var $this = $(this);
+                    if (curr.indexOf($this.attr("href")) !== -1) {
+                        $this.addClass("active");
+                        $this.addClass("bg-dark");
+                        $this.addClass("text-warning");
+                    }
+                })
+            });
+        </script>
+        
+
+}
