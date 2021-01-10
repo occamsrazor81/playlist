@@ -11,5 +11,5 @@ Made using:
 Additional pacakages:
 <ul>
   <li><a href="https://sweetalert2.github.io/">SweetAlert2</a></li>
-  <li><a href="#">FontAwesome</a></li>
+  <li><a href="https://fontawesome.com/">FontAwesome</a></li>
 </ul>
