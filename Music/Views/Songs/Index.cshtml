@@ -1,0 +1,47 @@
+﻿
+<br />
+
+<div class="container p-3 bg-dark">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-light">Song List</h2>
+        </div>
+        <div class="col-6 text-right">
+            <a asp-controller="Songs" asp-action="Add" class="btn btn-outline-warning">
+                <i class="fas fa-plus"></i> &nbsp; Add new Song
+            </a>
+        </div>
+    </div>
+
+    <br /><br />
+
+
+    <table id="data_table" class="table table-bordered" style="width:100%">
+        <thead class="text-light">
+            <tr>
+                <th>
+                    Title
+                </th>
+                <th>
+                    Author
+                </th>
+                <th>
+                    Category
+                </th>
+                <th>
+                    Published
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+</div>
+
+@section Scripts {
+    <script src="~/js/songList.js"></script>
+}
+
