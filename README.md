@@ -5,5 +5,11 @@ Made using:
 <ul>
   <li>Visual Studio</li>
   <li>ASP.NET Core 5.0</li>
-  <li>MS SQl Server 15.0</li>  
+  <li>MS SQl Server 15.0</li>
+</ul>
+<br/>
+Additional pacakages:
+<ul>
+  <li><a href="https://sweetalert2.github.io/">SweetAlert2</a></li>
+  <li><a href="#">FontAwesome</a></li>
 </ul>
