@@ -1,0 +1,63 @@
+﻿@model Music.ViewModels.AddSongsToPlaylistViewModel
+
+@{
+    ViewBag.Title = "Add Songs to Playlist: " + Model.Playlist.Title;
+}
+
+<br />
+
+<div class="container p-3 bg-dark">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-light">Add songs to Playlist: @Model.Playlist.Title</h2>
+        </div>
+    </div>
+
+    <br /><br />
+
+    <form asp-controller="Playlist" asp-action="AddSongs" method="post">
+        @if (Model.RemainingSongs.Count() > 0)
+        {
+            <table id="playlist_table" class="table table-bordered text-light" style="width:100%">
+                <thead class="text-light">
+                    <tr>
+                        <th>
+                            Title
+                        </th>
+                        <th>
+                            Author
+                        </th>
+                        <th>
+                            Category
+                        </th>
+                        <th>
+                            Published
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (var i = 0; i < Model.RemainingSongs.Count; ++i)
+                    {
+                        <tr>
+                            <td>@Model.RemainingSongs[i].Title</td>
+                            <td>@Model.RemainingSongs[i].Author</td>
+                            <td>@Model.RemainingSongs[i].Category</td>
+                            <td>@Model.RemainingSongs[i].YearPublished</td>
+                            <td>
+                                <input type="checkbox" asp-for="@Model.SongsToAddIds[i]"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <button type="submit" class="btn btn-outline-primary">Add selected songs</button>
+        }
+        else
+        {
+            <p>All available songs are already in this playlist.</p>
+        }
+    </form>
+
+
+</div>

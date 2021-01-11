@@ -1,0 +1,46 @@
+﻿
+
+@model Music.Models.Song
+
+<form method="post" asp-action="Create">
+    <div class="p-3 bg-dark text-light">
+        <div class="form-group row">
+            <h2 class="text-light pl-3">New Playlist</h2>
+        </div>
+        <div class="row">
+            <div class="col-8">
+                <div class="form-group row py-2">
+                    <div class="col-4">
+                        <label asp-for="Title"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="Title" class="form-control bg-dark text-light" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row py-2">
+                    <div class="col-8 offset-4 row">
+
+                        <div class="col">
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="fas fa-plus"></i> &nbsp; Create
+                            </button>
+                        </div>
+                        <div class="col">
+                            <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                                <i class="fas fa-backward"></i> &nbsp; Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                @* Keep this empty *@
+            </div>
+        </div>
+    </div>
+
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,70 @@
+﻿@model Music.Models.Playlist
+
+
+<h1>Editing Playlist: @Model.Title</h1>
+
+<br />
+
+<div class="container p-3 bg-dark">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-light">Songs in this playlist</h2>
+        </div>
+        <div class="col-6 text-right">
+            <a asp-controller="Playlists" asp-action="AddSongs" asp-route-id="@Model.Id" 
+               class="btn btn-outline-warning p-3">
+                <i class="fas fa-plus"></i> &nbsp; Add songs to playlist
+            </a>
+        </div>
+    </div>
+
+    <br /><br />
+
+    @if (Model.PlaylistSongs.Count() > 0)
+    {
+        <table id="¸playlist_table" class="table table-bordered" style="width:100%">
+            <thead class="text-light">
+                <tr>
+                    <th>
+                        Title
+                    </th>
+                    <th>
+                        Author
+                    </th>
+                    <th>
+                        Category
+                    </th>
+                    <th>
+                        Published
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach(var playlistSong in Model.PlaylistSongs)
+                {
+                <tr>
+                    <td>@playlistSong.Song.Title</td>
+                    <td>@playlistSong.Song.Author</td>
+                    <td>@playlistSong.Song.Category</td>
+                    <td>@playlistSong.Song.YearPublished</td>
+                    <td>
+                        <div class='text-center'>
+                           <a asp-action="DeleteSong" asp-route="@playlistSong.Song.Id" class='btn btn-outline-danger'
+                               style='cursor:pointer; width:75px;'>
+                                <i class="fas fa-trash-alt"></i>
+                           </a>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>At the moment there are no songs in this playlist.</p>
+    }
+
+
+</div>

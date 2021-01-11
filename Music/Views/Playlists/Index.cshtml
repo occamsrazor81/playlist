@@ -9,7 +9,7 @@
             <h2 class="text-light">My Playlists</h2>
         </div>
         <div class="col-6 text-right">
-            <a asp-controller="Playlist" asp-action="Create" class="btn btn-outline-warning">
+            <a asp-controller="Playlists" asp-action="Create" class="btn btn-outline-warning">
                 <i class="fas fa-plus"></i> &nbsp; Create New Playlist
             </a>
         </div>
@@ -32,11 +32,11 @@
                     <tr>
                         <td class="align-content-center" style="width:50%">@obj.Title</td>
                         <td style="width:50%">
-                            <a asp-controller="Playlist" asp-action="Edit" 
+                            <a asp-controller="Playlists" asp-action="EditPlaylist" asp-route-id="@obj.Id" 
                                class="btn btn-outline-primary mr-1" style="width:47%">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a asp-controller="Playlist" asp-action="Delete" 
+                            <a asp-controller="Playlists" asp-action="DeletePlaylist" asp-route-id="@obj.Id" 
                                class="btn btn-outline-danger ml-1" style="width:48%">
                                 <i class="fas fa-trash-alt"></i>
                             </a>
