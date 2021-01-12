@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,6 +21,7 @@ namespace Music.Models
         public string MusicUserId { get; set; }
 
         public List<PlaylistSong> PlaylistSongs { get; set; }
+
 
     }
 }
