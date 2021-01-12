@@ -1,0 +1,78 @@
+﻿@model Music.ViewModels.RemoveSongsFromPlaylistViewModel
+
+@{
+    ViewBag.Title = "Remove Songs from Playlist: " + Model.Playlist.Title;
+}
+
+<br />
+
+<div class="container p-3 bg-dark">
+    <div class="row pt-4">
+        <div class="col-6">
+            <h2 class="text-light">Remove songs from Playlist: @Model.Playlist.Title</h2>
+        </div>
+    </div>
+
+    <br /><br />
+
+          <form asp-controller="Playlists" asp-action="RemoveMultipleSongs" method="post">
+              @if (Model.SongsInPlaylist.Count > 0)
+              {
+                  <table id="playlist_table" class="table table-bordered text-light" style="width:100%">
+                      <thead class="text-light">
+                          <tr>
+                              <th>
+                                  Title
+                              </th>
+                              <th>
+                                  Author
+                              </th>
+                              <th>
+                                  Category
+                              </th>
+                              <th>
+                                  Published
+                              </th>
+                              <th></th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          @for (var i = 0; i < Model.SongsInPlaylist.Count; ++i)
+                          {
+                              <tr>
+                                  <td>@Model.SongsInPlaylist[i].Title</td>
+                                  <td>@Model.SongsInPlaylist[i].Author</td>
+                                  <td>@Model.SongsInPlaylist[i].Category</td>
+                                  <td>@Model.SongsInPlaylist[i].YearPublished</td>
+                                  <td>
+                                      <div class="custom-checkbox custom-control text-center">
+                                          <input type="checkbox" class="custom-control-input"
+                                                 asp-for="SongsToRemoveIds[i]"
+                                                 value="@Model.SongsInPlaylist[i].Id"
+                                                 id="@Model.SongsInPlaylist[i].Id" />
+                                          <label class="custom-control-label"
+                                                 for="@Model.SongsInPlaylist[i].Id"></label>
+                                          <span asp-validation-for="SongsToRemoveIds[i]"></span>
+                                      </div>
+                                  </td>
+                              </tr>
+                          }
+                      </tbody>
+                  </table>
+                  <input type="hidden" asp-for="PlaylistId" value="@Model.Playlist.Id" />
+                  <button type="submit" class="btn btn-outline-danger">
+                      <i class="fas fa-minus"></i> &nbsp; Remove selected songs
+                  </button>
+              }
+              else
+              {
+                  <p>There are no songs in this playlist.</p>
+              }
+              <a asp-controller="Playlists" asp-action="EditPlaylist" asp-route-id="@Model.Playlist.Id"
+                 class="btn btn-outline-secondary ml-1">
+                  <i class="fas fa-backward"></i> &nbsp; Back
+              </a>
+          </form>
+
+
+</div>
