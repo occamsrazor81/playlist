@@ -12,7 +12,9 @@ namespace Music.ViewModels
 
         public List<Song> RemainingSongs { get; set; }
 
-        public List<string> SongsToAddIds;
+        public List<string> SongsToAddIds { get; set; }
+
+        public int PlaylistId { get; set; }
 
         public AddSongsToPlaylistViewModel() { }
 

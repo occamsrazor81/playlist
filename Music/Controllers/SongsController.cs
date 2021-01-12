@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Music.Data;
 using Music.Models;
@@ -86,6 +87,13 @@ namespace Music.Controllers
 
                     else
                     {
+
+                        // delete row in PlaylistSongs where SongId = songToDelete.Id
+                        SqlParameter songId = new SqlParameter("@SongId", songToDelete.Id);
+                        _db.PlaylistSongs
+                            .FromSqlRaw("delete from dbo.PlaylistSongs " +
+                            "where SongId = @SongId", songId);
+
                         _db.Songs.Remove(songToDelete);
                         await _db.SaveChangesAsync();
                         return Json(new { success = true, message = "Song successfuly deleted" });
