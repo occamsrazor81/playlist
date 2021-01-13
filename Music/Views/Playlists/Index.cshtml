@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Music.Models.Playlist>
+﻿@*@model IEnumerable<Music.Models.Playlist>*@
 
 
 <br />
@@ -17,8 +17,8 @@
 
     <br /><br />
 
-    @if(Model.Count() > 0) 
-    { 
+    @*@if(Model.Count() > 0) 
+    {*@ 
         <table id="playlist_table" class="table table-bordered text-center" style="width:100%">
             <thead thead class="text-light">
                 <tr>
@@ -27,7 +27,7 @@
                 </tr>
             </thead>
             <tbody thead class="text-light">
-                @foreach (var obj in Model)
+                @*@foreach (var obj in Model)
                 {
                     <tr>
                         <td class="align-content-center" style="width:50%">@obj.Title</td>
@@ -42,15 +42,18 @@
                             </a>
                         </td>
                     </tr>
-                }
+                }*@
             </tbody>
         </table>
-    }
+    @*}
     else 
     { 
     <p>You didn't create any playlist yet.</p>
-    }
+    }*@
 
 
 </div>
 
+@section Scripts {
+<script src="~/js/playlistTable.js"></script>
+} 

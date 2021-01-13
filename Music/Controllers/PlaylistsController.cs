@@ -30,12 +30,58 @@ namespace Music.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            IEnumerable<Playlist> myPlaylists =
-                _db.Playlists.Where(p => p.MusicUserId == userId);
-
-            return View(myPlaylists);
+            return View();
         }
+
+        #region API Calls
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetPlaylists()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            IEnumerable<Playlist> myPlaylists = await
+                _db.Playlists.Where(p => p.MusicUserId == userId)
+                .ToListAsync();
+
+            return Json(new { data = myPlaylists });
+        }
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> DeletePlaylist(int? id)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                if (id == null) return NotFound();
+                else
+                {
+                    // find playlist that we wanna delete
+                    Playlist toDelete = await _db.Playlists.FirstOrDefaultAsync(p => p.Id == id);
+                    if (toDelete == null)
+                        return Json(new { success = false, message = "Error while trying to delete the playlist" });
+
+                    else
+                    {
+                        // find all rows in PlaylistSongs where PlaylistId = id
+                        SqlParameter idPlaylist = new SqlParameter("@PlaylistId", id);
+
+                        _db.PlaylistSongs
+                            .FromSqlRaw("delete from dbo.PlaylistSongs " +
+                            "where PlaylistId = @PlaylistId", idPlaylist);
+                        _db.Playlists.Remove(toDelete);
+                        await _db.SaveChangesAsync();
+
+                        return Json(new { success = true, message = "Playlist successfully deleted" });
+
+
+                    }
+                    
+                }
+            }
+
+            else return RedirectToPage("Identity/Account/Login");
+        }
+        #endregion
 
         // CREATE - GET
         [Authorize]

@@ -56,6 +56,17 @@ namespace Music.Controllers
             bool tryCreateResult = Uri.TryCreate(songToUpdate.Link, UriKind.Absolute, out Uri uriResult);
             if (ModelState.IsValid && tryCreateResult && uriResult != null)
             {
+                string capitalizeTitle = System.Threading.Thread.CurrentThread.CurrentCulture.
+                   TextInfo.ToTitleCase(songToUpdate.Title.ToLower());
+                string capitalizeAuthor = System.Threading.Thread.CurrentThread.CurrentCulture.
+                    TextInfo.ToTitleCase(songToUpdate.Author.ToLower());
+                string capitalizeCategory = System.Threading.Thread.CurrentThread.CurrentCulture.
+                    TextInfo.ToTitleCase(songToUpdate.Category.ToLower());
+
+                songToUpdate.Title = capitalizeTitle;
+                songToUpdate.Author = capitalizeAuthor;
+                songToUpdate.Category = capitalizeCategory;
+
                 _db.Songs.Update(songToUpdate);
                 await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -96,7 +107,7 @@ namespace Music.Controllers
 
                         _db.Songs.Remove(songToDelete);
                         await _db.SaveChangesAsync();
-                        return Json(new { success = true, message = "Song successfuly deleted" });
+                        return Json(new { success = true, message = "Song successfully deleted" });
                     }
 
                 }
@@ -114,6 +125,17 @@ namespace Music.Controllers
             bool tryCreateResult = Uri.TryCreate(newSong.Link, UriKind.Absolute, out Uri uriResult);
             if (ModelState.IsValid && tryCreateResult && uriResult != null) 
             {
+                string capitalizeTitle = System.Threading.Thread.CurrentThread.CurrentCulture.
+                    TextInfo.ToTitleCase(newSong.Title.ToLower());
+                string capitalizeAuthor = System.Threading.Thread.CurrentThread.CurrentCulture.
+                    TextInfo.ToTitleCase(newSong.Author.ToLower());
+                string capitalizeCategory = System.Threading.Thread.CurrentThread.CurrentCulture.
+                    TextInfo.ToTitleCase(newSong.Category.ToLower());
+
+                newSong.Title = capitalizeTitle;
+                newSong.Author = capitalizeAuthor;
+                newSong.Category = capitalizeCategory;
+
                 await _db.Songs.AddAsync(newSong);
                 await _db.SaveChangesAsync();
                 return RedirectToAction("Index");
