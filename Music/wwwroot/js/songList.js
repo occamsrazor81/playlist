@@ -5,6 +5,7 @@ $(document).ready(function () {
     loadData();
 });
 
+
 function loadData() {
     dataTable = $("#data_table").DataTable({
         "ajax": {
@@ -13,25 +14,41 @@ function loadData() {
             "datatype": "json"
         },
         "columns": [
-            { "data": "title", "width": "20%" },
-            { "data": "author", "width": "30%" },
-            { "data": "category", "width": "15%" },
-            { "data": "yearPublished", "width": "10%" },
+            {
+                "data": "title", "width": "30%",
+
+            },
+            { "data": "author", "width": "20%" },
+            { "data": "category", "width": "13%" },
+            { "data": "yearPublished", "width": "7%" },
             {
                 "data": "id",
                 "render": function (data) {
-                    return `<div class='text-center'>
+                    return `<div class='text-center clearfix'>   
+                            <div class='float-left'>
                             <a href="/Songs/Edit?id=${data}" class='btn btn-outline-primary' 
-                                    style='cursor:pointer; width:75px;'>
+                                    style='cursor:pointer; width:60px;'>
                                     <i class="fas fa-edit"></i>
                             </a>
                             <a onclick="Delete('/Songs/Delete?id='+${data})" class='btn btn-outline-danger' 
-                                    style='cursor:pointer; width:75px;'>
+                                    style='cursor:pointer; width:60px;'>
                                    <i class="fas fa-trash-alt"></i>
                             </a>
+                            </div>
+                            <div class='float-right'>
+                            <a onclick="Like('/Songs/Like?id='+${data})" 
+                                    class='btn btn-outline-success' 
+                                    style='cursor:pointer; width:60px;'>
+                                   <i class="fas fa-thumbs-up"></i>
+                            </a>
+                            <a onclick="Dislike('/Songs/Dislike?id='+${data})" class='btn btn-outline-danger' 
+                                    style='cursor:pointer; width:60px;'>
+                                   <i class="fas fa-thumbs-down"></i>
+                            </a>
+                            </div>
                         </div>`
-                }, "width": "15%"
-            }
+                }, "width": "30%"
+            },
         ],
         "language": {
             "emptyTable": "there are no songs in database yet"
@@ -89,4 +106,33 @@ function Delete(url) {
             });
         }
     });
+}
+
+
+function Like(url) {
+    console.log(url);
+    $.ajax({
+        url: url,
+        type: 'POST',
+        success: function (data) {
+            if (data.success) {
+                Swal.fire({
+                    title: "Request successful",
+                    text: data.message,
+                    icon: data.mark,
+                    confirmButtonText: '<i class="fas fa-thumbs-up"></i> &nbsp; OK',
+                    confirmButtonColor: data.color
+                });
+            }
+
+            else Swal.fire({
+                title: data.message.substring(0, 14),
+                text: data.message.substring(16, 33).charAt(0).toUpperCase() +
+                    data.message.substring(16, 33).slice(1),
+                icon: "error",
+                confirmButtonText: '<i class="fas fa-user-cog"></i> &nbsp; OK',
+                confirmButtonColor: '#dc3545'
+            });
+        }
+    })
 }
