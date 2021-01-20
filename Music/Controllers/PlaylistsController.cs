@@ -97,7 +97,7 @@ namespace Music.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(string title)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && title.ToUpper() != "FAVORITES")
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 Playlist playlistObj = new Playlist();
