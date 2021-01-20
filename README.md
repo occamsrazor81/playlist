@@ -1,6 +1,6 @@
 # Music and playlists
 Application where users can add, edit and delete songs.
-They can also create their playlists and edit those playlists (coming soon).
+They can also create their playlists and edit those playlists.
 Made using:
 <ul>
   <li><a href="https://visualstudio.microsoft.com/">Visual Studio</a> (not Code)</li>
@@ -13,4 +13,15 @@ Additional pacakages:
 <ul>
   <li><a href="https://sweetalert2.github.io/">SweetAlert2</a></li>
   <li><a href="https://fontawesome.com/">FontAwesome</a></li>
+</ul>
+<br/>
+To do:
+<ul>
+  <li>Dislike API call</li>
+  <li>Adding links to songs</li>
+  <li>Seeing other users profiles (and your own)</li>
+  <li>Connect users with the same 'taste' ("FAVORITES" playlist) feature</li>
+  <li>Admin users maybe? (only them  could add, edit or remove songs)</li>
+  <li>Song reccomendations (based on FAVORITES)</li>
+  <li>Ability to send emails to other users and talk about music (needs more brainstorming)</li>
 </ul>
