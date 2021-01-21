@@ -16,7 +16,11 @@ function loadData() {
         "columns": [
             {
                 "data": "title", "width": "30%",
-
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    $(nTd).html(
+                        "<a href = '" + oData.link + "' class='text-decoration-none text-info' > " + oData.title + "</a > "
+                    );
+                }
             },
             { "data": "author", "width": "20%" },
             { "data": "category", "width": "13%" },
@@ -69,7 +73,7 @@ function Delete(url) {
         cancelButtonText:
             '<i class="fa fa-thumbs-down"></i> &nbsp; Cancel',
         confirmButtonColor: '#dc3545',
-        cancelButtonColor:'#6c757d',
+        cancelButtonColor: '#6c757d',
 
     }).then((toDelete) => {
         if (toDelete.isConfirmed) {
@@ -110,7 +114,6 @@ function Delete(url) {
 
 
 function Like(url) {
-    console.log(url);
     $.ajax({
         url: url,
         type: 'POST',
@@ -121,6 +124,34 @@ function Like(url) {
                     text: data.message,
                     icon: data.mark,
                     confirmButtonText: '<i class="fas fa-thumbs-up"></i> &nbsp; OK',
+                    confirmButtonColor: data.color
+                });
+            }
+
+            else Swal.fire({
+                title: data.message.substring(0, 14),
+                text: data.message.substring(16, 33).charAt(0).toUpperCase() +
+                    data.message.substring(16, 33).slice(1),
+                icon: "error",
+                confirmButtonText: '<i class="fas fa-user-cog"></i> &nbsp; OK',
+                confirmButtonColor: '#dc3545'
+            });
+        }
+    })
+}
+
+
+function Dislike(url) {
+    $.ajax({
+        url: url,
+        type: 'POST',
+        success: function (data) {
+            if (data.success) {
+                Swal.fire({
+                    title: "Request successful",
+                    text: data.message,
+                    icon: data.mark,
+                    confirmButtonText: '<i class="fas fa-thumbs-down"></i> &nbsp; OK',
                     confirmButtonColor: data.color
                 });
             }

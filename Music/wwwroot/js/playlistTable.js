@@ -2,45 +2,52 @@
 var dataTable;
 
 $(document).ready(function () {
-    console.log($(this).attr("id"));
     loadData();
 });
 
 function loadData() {
     dataTable = $("#playlist_table").DataTable({
         "ajax": {
-            "url": "/playlists/editplaylist",
+            "url": "/playlists/getplaylists/",
             "type": "GET",
             "datatype": "json"
         },
         "columns": [
-            { "data": "title", "width": "25%" },
-            { "data": "author", "width": "30%" },
-            { "data": "category", "width": "15%" },
-            { "data": "yearPublished", "width": "15%" },
+            { "data": "title", "width": "70%" },
             {
-                "data": "id",
+                "data": { "id": "id", "title": "id" },
                 "render": function (data) {
-                    return `<div class='text-center'>
-                            <a onclick="RemoveSong('/Playlist/RemoveSong?id='+${data})" class='btn btn-outline-danger' 
+                    if (data.title !== "FAVORITES" && data.title !== "BLACKLIST")
+                        return `<div class='text-center'>
+                            <a href="/Playlists/EditPlaylist?id=${data.id}" 
+                               class="btn btn-outline-primary mr-1 mb-1" style="width:75px">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a onclick="DeletePlaylist('/Playlists/DeletePlaylist?id='+${data.id})" class='btn btn-outline-danger' 
                                     style='cursor:pointer; width:75px;'>
                                    <i class="fas fa-trash-alt"></i>
                             </a>
                         </div>`
-                }, "width": "15%"
+                    else return `<div class='text-center'>
+                           <a href="/Playlists/EditPlaylist?id=${data.id}" 
+                               class="btn btn-outline-primary mr-1 mb-1" style="width:75px">
+                                <i class="fas fa-edit"></i>
+                            </a> 
+                        </div>`
+                }, "width": "30%"
             }
         ],
         "language": {
-            "emptyTable": "there are no songs in database yet"
+            "emptyTable": "You didn't create any playlists yet. "
         }, "width": "100%"
     });
 }
 
 
-function RemoveSong(url) {
+function DeletePlaylist(url) {
     Swal.fire({
         title: "Are you sure?",
-        text: "This method will permanently delete song from the list.",
+        text: "This method will permanently delete your playlist (and also remove all songs from it).",
         icon: "warning",
         showCloseButton: true,
         showCancelButton: true,
