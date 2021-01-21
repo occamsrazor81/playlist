@@ -80,6 +80,7 @@ namespace Music.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllSongs()
         {
+            var songs = _db.Songs.ToList();
             return Json(new { data = await _db.Songs.ToListAsync() });
         }
 
@@ -144,11 +145,37 @@ namespace Music.Controllers
                     // ako playlista FAVORITES ne postoji potrebno ju je napraviti
                     // playlistu FAVORITES NE SMIJE BITI MOGUĆE obrisati ni mijenjati
 
-                    // 1 - dohvati FAVORITES playlistu
+                    // takoder trebamo obratit pozornost na playlistu BLACKLIST
+                    // koja sadrzi dislikeane pjesme
+                    // ako BLACKLISTA vec sadrzi pjesmu sa Id = id
+                    // onda je moramo maknut iz BLACKLISTE
+                    // (jer ne moze biti i u FAVORITES i BLACKLIST istovremeno)
+
+
+
+                    // dohvati FAVORITES playlistu
                     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     Playlist favPlaylist = await
                         _db.Playlists.SingleOrDefaultAsync(p => 
                         p.MusicUserId == userId && p.Title == "FAVORITES");
+
+                    // dohvati BLACKLIST playlistu
+                    Playlist blacklist = await
+                        _db.Playlists.SingleOrDefaultAsync(p =>
+                        p.MusicUserId == userId && p.Title == "BLACKLIST");
+
+                    // ako BLACKLIST postoji onda moramo provjeriti jel pjesmu unutra
+                    // inace ne trebamo nista napraviti
+                    if(blacklist != null)
+                    {
+                        // provjeravamo jel pjesma u BLACKLISTi
+                        PlaylistSong alreadyBlacklisted = await
+                            _db.PlaylistSongs.SingleOrDefaultAsync(ps => 
+                            ps.PlaylistId == blacklist.Id && ps.SongId == id);
+
+                        if(alreadyBlacklisted != null)
+                        _db.PlaylistSongs.Remove(alreadyBlacklisted);
+                    }
 
                     // int favId = -1;
                     // trebamo kreirati playlistu FAVORITES za ovog usera
@@ -227,13 +254,118 @@ namespace Music.Controllers
                         });
 
                     }
-
-                    //return Json(new { success = true, option="success", message = "Song added to favorites" });
                 }
 
             }
 
                 return Json(new { success = false, message = "Request failed (unauthorized user)" });
+        }
+
+
+
+        // DISLIKE -> POST
+        [HttpPost]
+        public async Task<IActionResult> Dislike(int? id)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                if (id == null) return NotFound();
+                else
+                {
+                    
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    Playlist blacklist = await
+                        _db.Playlists.SingleOrDefaultAsync(p =>
+                        p.MusicUserId == userId && p.Title == "BLACKLIST");
+
+                    Playlist favorites = await
+                        _db.Playlists.SingleOrDefaultAsync(p => 
+                        p.MusicUserId == userId && p.Title == "FAVORITES");
+
+                    if(favorites != null)
+                    {
+                        PlaylistSong alreadyFavorites = await
+                            _db.PlaylistSongs.SingleOrDefaultAsync(ps =>
+                            ps.SongId == id && ps.PlaylistId == favorites.Id);
+
+                        if (alreadyFavorites != null)
+                            _db.PlaylistSongs.Remove(alreadyFavorites);
+                    }
+
+
+                    if (blacklist == null)
+                    {
+                        Playlist createBlacklist = new Playlist();
+                        createBlacklist.Title = "BLACKLIST";
+                        createBlacklist.MusicUserId = userId;
+
+                        await _db.Playlists.AddAsync(createBlacklist);
+
+                        Song blackSong = await _db.Songs.FindAsync(id);
+                        PlaylistSong newPS = new PlaylistSong
+                        {
+                            Playlist = createBlacklist,
+                            Song = blackSong
+                        };
+
+                        await _db.PlaylistSongs.AddAsync(newPS);
+                        await _db.SaveChangesAsync();
+
+                        return Json(new
+                        {
+                            success = true,
+                            mark = "success",
+                            message = "Playlist BLACKLIST created and song added to BLACKLIST",
+                            color = "#dc3545"
+                        });
+
+                    }
+
+                    else
+                    {
+
+                        PlaylistSong targetPS = await _db.PlaylistSongs
+                            .SingleOrDefaultAsync(
+                            ps => ps.PlaylistId == blacklist.Id
+                            && ps.SongId == id
+                            );
+
+                        if (targetPS == null)
+                        {
+                            Song newBlackSong = await _db.Songs.FindAsync(id);
+                            PlaylistSong newPS = new PlaylistSong
+                            {
+                                Playlist = blacklist,
+                                Song = newBlackSong
+                            };
+
+                            await _db.PlaylistSongs.AddAsync(newPS);
+                            await _db.SaveChangesAsync();
+
+                            return Json(new
+                            {
+                                success = true,
+                                mark = "success",
+                                message = "Song added to BLACKLIST",
+                                color = "#dc3545"
+                            });
+
+                        }
+
+                        else return Json(new
+                        {
+                            success = true,
+                            mark = "info",
+                            message = "Song is already in your BLACKLIST",
+                            color = "#17a2b8"
+                        });
+
+                    }
+                }
+
+            }
+
+            return Json(new { success = false, message = "Request failed (unauthorized user)" });
         }
 
 
