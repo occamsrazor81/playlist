@@ -18,11 +18,9 @@ Additional pacakages:
 <br/>
 To do:
 <ul>
-  <li>Dislike API call</li>
-  <li>Adding links to songs</li>
   <li>Seeing other users profiles (and your own)</li>
   <li>Connect users with the same 'taste' ("FAVORITES" playlist) feature</li>
   <li>Admin users maybe? (only them  could add, edit or remove songs)</li>
   <li>Song reccomendations (based on FAVORITES)</li>
-  <li>Ability to send emails to other users and talk about music (needs more brainstorming)</li>
+  <li>Ability to send emails (or other type of chat/forum) to other users and talk about music (needs more brainstorming)</li>
 </ul>
