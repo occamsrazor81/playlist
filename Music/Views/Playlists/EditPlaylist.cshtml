@@ -1,93 +1,110 @@
 ﻿@model Music.ViewModels.EditPlaylistViewModel
 
 
-<h1>Editing Playlist: @Model.editPlaylist.Title</h1>
+@if (Model.editPlaylist.Title != "FAVORITES" && Model.editPlaylist.Title != "BLACKLIST")
+{
+    <h1>Editing Playlist: @Model.editPlaylist.Title</h1>
+    <br />
+}
 
-<br />
+else
+{
+    <h1>@Model.editPlaylist.Title</h1>
+}
+
+
 
 <div class="container p-3 bg-dark">
-    <div class="row pt-4">
-        <div class="col-6">
-            <h2 class="text-light">Songs in this playlist</h2>
-        </div>
-        <div class="col-3 text-right">
-            <a asp-controller="Playlists" asp-action="AddSongs" asp-route-id="@Model.editPlaylist.Id"
-               class="btn btn-outline-success p-2">
-                <i class="fas fa-plus"></i> &nbsp; Add songs
-            </a>
-        </div>
-        @if (Model.editPlaylist.PlaylistSongs.Count > 0)
-        {
+    @if (Model.editPlaylist.Title != "FAVORITES" && Model.editPlaylist.Title != "BLACKLIST")
+    {
+        <div class="row pt-4">
+            <div class="col-6">
+                <h2 class="text-light">Songs in this playlist</h2>
+            </div>
             <div class="col-3 text-right">
-                <a asp-controller="Playlists" asp-action="RemoveMultipleSongs" asp-route-id="@Model.editPlaylist.Id"
-                   class="btn btn-outline-danger p-2">
-                    <i class="fas fa-minus"></i> &nbsp; Remove songs
+                <a asp-controller="Playlists" asp-action="AddSongs" asp-route-id="@Model.editPlaylist.Id"
+                   class="btn btn-outline-success p-2">
+                    <i class="fas fa-plus"></i> &nbsp; Add songs
                 </a>
             </div>
-        }
-        else
-        {
-            <div class="col-3 text-right">
-                <a asp-controller="Playlists" asp-action="Index"
-                   class="btn btn-outline-secondary p-2">
-                    <i class="fas fa-backward"></i> &nbsp; Back to Playlists
-                </a>
-            </div>
-        }
-    </div>
+            @if (Model.editPlaylist.PlaylistSongs.Count > 0)
+            {
+                <div class="col-3 text-right">
+                    <a asp-controller="Playlists" asp-action="RemoveMultipleSongs" asp-route-id="@Model.editPlaylist.Id"
+                       class="btn btn-outline-danger p-2">
+                        <i class="fas fa-minus"></i> &nbsp; Remove songs
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="col-3 text-right">
+                    <a asp-controller="Playlists" asp-action="Index"
+                       class="btn btn-outline-secondary p-2">
+                        <i class="fas fa-backward"></i> &nbsp; Back to Playlists
+                    </a>
+                </div>
+            }
+        </div>
+    }
 
     <br /><br />
 
     @if (Model.editPlaylist.PlaylistSongs.Count > 0)
     {
-        
-            <table class="table table-bordered text-light" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>
-                            Title
-                        </th>
-                        <th>
-                            Author
-                        </th>
-                        <th>
-                            Category
-                        </th>
-                        <th>
-                            Published
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var playlistSong in Model.editPlaylist.PlaylistSongs)
-                    {
-                        <tr>
-                            <td>@playlistSong.Song.Title</td>
-                            <td>@playlistSong.Song.Author</td>
-                            <td>@playlistSong.Song.Category</td>
-                            <td>@playlistSong.Song.YearPublished</td>
-                            <td>
-                                <form method="post" asp-action="RemoveSingleSong">
-                                    <div class='text-center'>
-                                        <button type="submit"
-                                                class='btn btn-outline-danger'
-                                                style='cursor:pointer; width:75px;'>
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                    <input type="hidden" asp-for="@Model.playlistId" value="@Model.editPlaylist.Id" />
-                                    <span class="text-danger" asp-validation-for="@Model.playlistId"></span>
-                                    <input type="hidden" asp-for="@Model.songId" value="@playlistSong.Song.Id" />
-                                    <span class="text-danger" asp-validation-for="@Model.songId"></span>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
 
-        
+        <table class="table table-bordered text-light" style="width:100%">
+            <thead>
+                <tr>
+                    <th>
+                        Title
+                    </th>
+                    <th>
+                        Author
+                    </th>
+                    <th>
+                        Category
+                    </th>
+                    <th>
+                        Published
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var playlistSong in Model.editPlaylist.PlaylistSongs)
+                {
+                    <tr>
+                        <td>
+                            <a href="@playlistSong.Song.Link" class="text-decoration-none text-info">
+                                @playlistSong.Song.Title
+                            </a>
+                        </td>
+                        <td>@playlistSong.Song.Author</td>
+                        <td>@playlistSong.Song.Category</td>
+                        <td>@playlistSong.Song.YearPublished</td>
+                        <td>
+
+                            <form method="post" asp-action="RemoveSingleSong">
+                                <div class='text-center'>
+                                    <button type="submit"
+                                            class='btn btn-outline-danger'
+                                            style='cursor:pointer; width:75px;'>
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </div>
+                                <input type="hidden" asp-for="@Model.playlistId" value="@Model.editPlaylist.Id" />
+                                <span class="text-danger" asp-validation-for="@Model.playlistId"></span>
+                                <input type="hidden" asp-for="@Model.songId" value="@playlistSong.Song.Id" />
+                                <span class="text-danger" asp-validation-for="@Model.songId"></span>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+
         <a asp-controller="Playlists" asp-action="Index"
            class="btn btn-outline-secondary w-100 p-3">
             <i class="fas fa-backward"></i> &nbsp; Back to Playlists
