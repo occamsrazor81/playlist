@@ -18,11 +18,14 @@ namespace Music.Controllers
     public class PlaylistsController : Controller
     {
         private readonly ApplicationDbContext _db;
+        private readonly AuthDbContext _dbAuth;
         private readonly UserManager<MusicUser> _userManager;
 
-        public PlaylistsController(ApplicationDbContext db, UserManager<MusicUser> userManager)
+        public PlaylistsController(ApplicationDbContext db, AuthDbContext dbAuth,
+            UserManager<MusicUser> userManager)
         {
             _db = db;
+            _dbAuth = dbAuth;
             _userManager = userManager;
 
         }
@@ -62,6 +65,12 @@ namespace Music.Controllers
 
                     else
                     {
+
+                        // check if we are deleting our 'own' playlist
+                        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                        if (userId != toDelete.MusicUserId)
+                            return RedirectToAction("Index");
+
                         // find all rows in PlaylistSongs where PlaylistId = id
                         SqlParameter idPlaylist = new SqlParameter("@PlaylistId", id);
 
@@ -118,14 +127,23 @@ namespace Music.Controllers
         [HttpGet]
         public async Task<IActionResult> EditPlaylist(int? id)
         {
+            
+
             if (id == null) return NotFound();
             else
             {
+
                 Playlist playlistObj = await _db.Playlists.FindAsync(id);
                 if (playlistObj == null) return NotFound();
                 else
                 {
-                    List<PlaylistSong> playlistSongs = await _db
+                    // first we need to check if logged in user 'owns' that playlist
+                    //MusicUser currUser = await _dbAuth.Users.FindAsync(playlistObj.MusicUserId);
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (userId != playlistObj.MusicUserId)
+                        return RedirectToAction("Index");
+
+                    List <PlaylistSong> playlistSongs = await _db
                         .PlaylistSongs
                         .Include(s => s.Song)
                         .Where(ps => ps.PlaylistId == id)
@@ -146,6 +164,13 @@ namespace Music.Controllers
             if (id == null) return NotFound();
 
             Playlist playlistObj = await _db.Playlists.FindAsync(id);
+
+            if (playlistObj == null) return NotFound();
+
+            // check if it's our playlist
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != playlistObj.MusicUserId)
+                return RedirectToAction("Index");
 
             SqlParameter idParam = new SqlParameter("@PlaylistId", id);
 
@@ -269,6 +294,13 @@ namespace Music.Controllers
 
             Playlist playlistObj = await _db.Playlists.FindAsync(id);
 
+            if (playlistObj == null) return NotFound();
+
+            // check if our
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId != playlistObj.MusicUserId)
+                return RedirectToAction("Index");
+
             List<Song> songsInPlaylist = await _db
                 .Songs
                 .FromSqlRaw("select * from dbo.Songs where Id in " +
@@ -363,6 +395,35 @@ namespace Music.Controllers
                 });
             }
 
+        }
+
+        [Authorize]
+        public async Task<IActionResult> LookAt(int? id)
+        {
+
+            // we want more data than just the playlist: 
+            // 1. playlist 
+            // 2. songs in playlist
+            // 3. user data
+            // return as UserPlaylistViewModel
+
+            // 1. playlist
+            Playlist selectedPlaylist = await _db.Playlists.FindAsync(id);
+
+            // 2. songs in playlist
+            List<Song> songsInPlaylist = await _db
+                .Songs
+                .FromSqlRaw("select * from dbo.Songs where Id in " +
+                "(select SongId from dbo.PlaylistSongs where PlaylistId = @PID)",
+                new SqlParameter("@PID", id))
+                .ToListAsync();
+
+            // 3. user data
+            MusicUser viewedUser = await _dbAuth.Users.FindAsync(selectedPlaylist.MusicUserId);
+
+            UserPlaylistViewModel upvm = new UserPlaylistViewModel(selectedPlaylist, songsInPlaylist, viewedUser.Id, viewedUser.FirstName, viewedUser.LastName, viewedUser.Email);
+
+            return View(upvm);
         }
 
     }
