@@ -1,0 +1,28 @@
+﻿
+@model Music.ViewModels.UserViewModel;
+
+<br />
+
+<h3 class="mb-5 font-italic">@Model.FirstName @Model.LastName (@Model.Email) 's profile</h3>
+
+<table class="table table-bordered text-light w-100 text-center">
+    <thead>
+        <tr>
+            <th>Playlist</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(Playlist uPlaylist in Model.Playlists)
+        {
+            <tr>
+                <td>
+                    <a class="text-info text-decoration-none"
+                       asp-controller="Playlists" asp-action="LookAt"
+                       asp-route-id="@uPlaylist.Id">
+                        @uPlaylist.Title
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
