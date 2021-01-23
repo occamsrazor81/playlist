@@ -18,6 +18,7 @@ Additional pacakages:
 <br/>
 To do:
 <ul>
+  <li>Do sth \w homepage (needs more brainstorming)</li>
   <li>Add visibility to playlist (private or public) so we can choose if oher users can see it</li>
   <li>Seeing other users profiles (and your own)</li>
   <li>Connect users with the same 'taste' ("FAVORITES" playlist) feature</li>
