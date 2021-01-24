@@ -60,12 +60,12 @@ namespace Music.Controllers
                 string capitalizeTitle = System.Threading.Thread.CurrentThread.CurrentCulture.
                    TextInfo.ToTitleCase(songToUpdate.Title.ToLower());
                 string capitalizeAuthor = System.Threading.Thread.CurrentThread.CurrentCulture.
-                    TextInfo.ToTitleCase(songToUpdate.Author.ToLower());
+                    TextInfo.ToTitleCase(songToUpdate.Artist.ToLower());
                 string capitalizeCategory = System.Threading.Thread.CurrentThread.CurrentCulture.
                     TextInfo.ToTitleCase(songToUpdate.Category.ToLower());
 
                 songToUpdate.Title = capitalizeTitle;
-                songToUpdate.Author = capitalizeAuthor;
+                songToUpdate.Artist = capitalizeAuthor;
                 songToUpdate.Category = capitalizeCategory;
 
                 _db.Songs.Update(songToUpdate);
@@ -384,12 +384,12 @@ namespace Music.Controllers
                 string capitalizeTitle = System.Threading.Thread.CurrentThread.CurrentCulture.
                     TextInfo.ToTitleCase(newSong.Title.ToLower());
                 string capitalizeAuthor = System.Threading.Thread.CurrentThread.CurrentCulture.
-                    TextInfo.ToTitleCase(newSong.Author.ToLower());
+                    TextInfo.ToTitleCase(newSong.Artist.ToLower());
                 string capitalizeCategory = System.Threading.Thread.CurrentThread.CurrentCulture.
                     TextInfo.ToTitleCase(newSong.Category.ToLower());
 
                 newSong.Title = capitalizeTitle;
-                newSong.Author = capitalizeAuthor;
+                newSong.Artist = capitalizeAuthor;
                 newSong.Category = capitalizeCategory;
 
                 await _db.Songs.AddAsync(newSong);
