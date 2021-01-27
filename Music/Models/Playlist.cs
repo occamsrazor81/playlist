@@ -20,6 +20,9 @@ namespace Music.Models
         [ForeignKey("MusicUser")]
         public string MusicUserId { get; set; }
 
+        [Required]
+        public bool isPrivate { get; set; }
+
         public List<PlaylistSong> PlaylistSongs { get; set; }
 
 
