@@ -1,6 +1,6 @@
 ﻿
 
-@model Music.Models.Song
+@model Music.Models.Playlist
 
 <form method="post" asp-action="Create">
     <div class="p-3 bg-dark text-light">
@@ -18,6 +18,40 @@
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                 </div>
+                @*<div class="form-group row py-2">
+                    <div class="col-4">
+                        <label asp-for="isPrivate"></label>
+                    </div>
+                    <div class="col-8">
+                        <input asp-for="isPrivate" type="radio" value="0"
+                               class="form-control" /> Public
+                        <input asp-for="isPrivate" type="radio" value="1"
+                               class="form-control" /> Private
+                        <span asp-validation-for="isPrivate" class="text-danger"></span>
+                    </div>
+
+                </div>*@
+
+            <div class="py-2 btn-group col-12" data-toggle="buttons">
+                <label class="btn bg-danger btn-rounded form-check-label text-light mr-2 p-2">
+                    <input asp-for="isPrivate"
+                           class="form-check-input"
+                           type="radio" value="false"
+                           checked autocomplete="off"> Public
+                    <i class="fas fa-lock-open ml-1"></i>
+                </label>
+
+                <label class="btn bg-success btn-rounded form-check-label text-light ml-2 p-2">
+                    <input asp-for="isPrivate"
+                           class="form-check-input"
+                           type="radio" value="true"
+                           autocomplete="off"> Private
+                    <i class="fas fa-lock ml-1"></i>
+                </label>
+                <br />
+                <span asp-validation-for="isPrivate" class="text-danger"></span>
+            </div>
+
                 <div class="form-group row py-2">
                     <div class="col-8 offset-4 row">
 
