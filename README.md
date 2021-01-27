@@ -19,6 +19,7 @@ Additional pacakages:
 To do:
 <ul>
   <li>Do sth \w homepage (needs more brainstorming)</li>
+  <li>change playlist visibility (private/public) and rename</li>
   <li>Add options for users (pics, status, favorite categories, ...)</li>
   <li>Connect users with the same 'taste' ("FAVORITES" playlist) feature</li>
   <li>Admin users maybe? (only them  could add, edit or remove songs)</li>
