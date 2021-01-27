@@ -64,7 +64,9 @@ namespace Music.Controllers
                 mu.Id, mu.FirstName, mu.LastName, mu.Email);
 
             List<Playlist> selectedUserPlaylists = await
-                _appDb.Playlists.Where(p => p.MusicUserId == id).ToListAsync();
+                _appDb.Playlists
+                .Where(p => p.MusicUserId == id && !p.isPrivate)
+                .ToListAsync();
 
             selectedUser.Playlists = selectedUserPlaylists;
 

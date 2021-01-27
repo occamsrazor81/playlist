@@ -104,14 +104,15 @@ namespace Music.Controllers
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string title)
+        public async Task<IActionResult> Create(string title, bool isPrivate)
         {
-            if (ModelState.IsValid && title.ToUpper() != "FAVORITES")
+            if (ModelState.IsValid && title.ToUpper() != "FAVORITES" && title.ToUpper() != "BLACKLIST")
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 Playlist playlistObj = new Playlist();
                 playlistObj.MusicUserId = userId;
                 playlistObj.Title = title;
+                playlistObj.isPrivate = isPrivate;
 
                 await _db.Playlists.AddAsync(playlistObj);
                 await _db.SaveChangesAsync();
@@ -128,7 +129,6 @@ namespace Music.Controllers
         public async Task<IActionResult> EditPlaylist(int? id)
         {
             
-
             if (id == null) return NotFound();
             else
             {
@@ -409,6 +409,11 @@ namespace Music.Controllers
 
             // 1. playlist
             Playlist selectedPlaylist = await _db.Playlists.FindAsync(id);
+            if (selectedPlaylist.isPrivate)
+                return RedirectToAction("Profile", "Users", 
+                    new {
+                        id = selectedPlaylist.MusicUserId
+                    });
 
             // 2. songs in playlist
             List<Song> songsInPlaylist = await _db
