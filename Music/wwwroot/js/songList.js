@@ -22,30 +22,30 @@ function loadData() {
                     );
                 }
             },
-            { "data": "author", "width": "20%" },
+            { "data": "artist", "width": "20%" },
             { "data": "category", "width": "13%" },
             { "data": "yearPublished", "width": "7%" },
             {
                 "data": "id",
                 "render": function (data) {
                     return `<div class='text-center clearfix'>   
-                            <div class='float-left'>
-                            <a href="/Songs/Edit?id=${data}" class='btn btn-outline-primary' 
+                            <div class='float-xl-left float-lg-none my-1'>
+                            <a href="/Songs/Edit?id=${data}" class='btn btn-outline-primary m-1' 
                                     style='cursor:pointer; width:60px;'>
                                     <i class="fas fa-edit"></i>
                             </a>
-                            <a onclick="Delete('/Songs/Delete?id='+${data})" class='btn btn-outline-danger' 
+                            <a onclick="Delete('/Songs/Delete?id='+${data})" class='btn btn-outline-danger m-1' 
                                     style='cursor:pointer; width:60px;'>
                                    <i class="fas fa-trash-alt"></i>
                             </a>
                             </div>
-                            <div class='float-right'>
+                            <div class='float-xl-right float-lg-none my-1'>
                             <a onclick="Like('/Songs/Like?id='+${data})" 
-                                    class='btn btn-outline-success' 
+                                    class='btn btn-outline-success m-1' 
                                     style='cursor:pointer; width:60px;'>
                                    <i class="fas fa-thumbs-up"></i>
                             </a>
-                            <a onclick="Dislike('/Songs/Dislike?id='+${data})" class='btn btn-outline-danger' 
+                            <a onclick="Dislike('/Songs/Dislike?id='+${data})" class='btn btn-outline-danger m-1' 
                                     style='cursor:pointer; width:60px;'>
                                    <i class="fas fa-thumbs-down"></i>
                             </a>
