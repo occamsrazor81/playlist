@@ -18,19 +18,6 @@
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
                 </div>
-                @*<div class="form-group row py-2">
-                    <div class="col-4">
-                        <label asp-for="isPrivate"></label>
-                    </div>
-                    <div class="col-8">
-                        <input asp-for="isPrivate" type="radio" value="0"
-                               class="form-control" /> Public
-                        <input asp-for="isPrivate" type="radio" value="1"
-                               class="form-control" /> Private
-                        <span asp-validation-for="isPrivate" class="text-danger"></span>
-                    </div>
-
-                </div>*@
 
             <div class="py-2 btn-group col-12" data-toggle="buttons">
                 <label class="btn bg-danger btn-rounded form-check-label text-light mr-2 p-2">
@@ -52,16 +39,18 @@
                 <span asp-validation-for="isPrivate" class="text-danger"></span>
             </div>
 
-                <div class="form-group row py-2">
-                    <div class="col-8 offset-4 row">
+                <div class="form-group row py-2 mt-3">
+                    <div class="col-10 offset-2 row">
 
-                        <div class="col">
-                            <button type="submit" class="btn btn-outline-primary w-100">
+                        <div class="col-5">
+                            <button type="submit" class="btn btn-outline-primary"
+                                    style="width:90px">
                                 <i class="fas fa-plus"></i> &nbsp; Create
                             </button>
                         </div>
-                        <div class="col">
-                            <a asp-action="Index" class="btn btn-outline-secondary w-100">
+                        <div class="col-5">
+                            <a asp-action="Index" class="btn btn-outline-secondary"
+                               style="width:90px">
                                 <i class="fas fa-backward"></i> &nbsp; Back
                             </a>
                         </div>

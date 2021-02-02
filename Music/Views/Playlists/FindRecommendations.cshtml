@@ -1,0 +1,27 @@
+﻿
+@model Music.ViewModels.RecommendationsViewModel
+
+
+<h1>Find recommendations</h1>
+<br />
+
+<select id="searchAttributes"
+        class="custom-select form-control bg-dark text-light"
+        name="searchAttributes"
+        asp-for="@Model.SelectedAttribute"
+        asp-items="@(new SelectList(Model.SearchAttributes))">
+    <option>Select one option to find your recommendations</option>
+</select>
+
+<div id="checkboxTableDiv" class="mt-5" style="width:100%">
+
+</div>
+
+<div id="resultTableDiv" class="mt-5" style="width:100%">
+
+</div>
+
+
+@section Scripts {
+    <script src="~/js/recommendations.js"></script>
+}
