@@ -84,7 +84,7 @@ namespace Music.Controllers
 
 
                     }
-                    
+
                 }
             }
 
@@ -128,7 +128,7 @@ namespace Music.Controllers
         [HttpGet]
         public async Task<IActionResult> EditPlaylist(int? id)
         {
-            
+
             if (id == null) return NotFound();
             else
             {
@@ -143,7 +143,7 @@ namespace Music.Controllers
                     if (userId != playlistObj.MusicUserId)
                         return RedirectToAction("Index");
 
-                    List <PlaylistSong> playlistSongs = await _db
+                    List<PlaylistSong> playlistSongs = await _db
                         .PlaylistSongs
                         .Include(s => s.Song)
                         .Where(ps => ps.PlaylistId == id)
@@ -282,7 +282,7 @@ namespace Music.Controllers
             else return RedirectToAction("EditPlaylist", new
             {
                 id = addSongsToPlaylistViewModel.PlaylistId
-            }) ;
+            });
         }
 
         // REMOVEMULTIPLESONGS - GET
@@ -308,7 +308,7 @@ namespace Music.Controllers
                 "where PlaylistId = @PlaylistId)", new SqlParameter("@PlaylistId", id))
                 .ToListAsync();
 
-            if (songsInPlaylist.Count > 0) 
+            if (songsInPlaylist.Count > 0)
                 return View(new RemoveSongsFromPlaylistViewModel(playlistObj, songsInPlaylist));
 
             else return NotFound();
@@ -333,7 +333,7 @@ namespace Music.Controllers
                 // remove songs from playlistsongs if there are any
                 if (songsToRemoveIds.Count > 0)
                 {
-                    foreach(int songId in songsToRemoveIds)
+                    foreach (int songId in songsToRemoveIds)
                     {
                         Song mySong = await _db.Songs.FindAsync(songId);
                         PlaylistSong ps = new PlaylistSong
@@ -349,7 +349,7 @@ namespace Music.Controllers
 
                     return RedirectToAction("EditPlaylist", new
                     {
-                        id=playlistId
+                        id = playlistId
                     });
                 }
 
@@ -359,7 +359,8 @@ namespace Music.Controllers
                 });
             }
 
-            else return RedirectToAction("EditPlaylist", new {
+            else return RedirectToAction("EditPlaylist", new
+            {
                 id = removeSongsFromPlaylistViewModel.PlaylistId
             });
         }
@@ -383,15 +384,15 @@ namespace Music.Controllers
 
                 return RedirectToAction("EditPlaylist", new
                 {
-                    id=epvm.playlistId
+                    id = epvm.playlistId
                 });
             }
 
             else
             {
-                return RedirectToAction("EditPlaylist", new 
+                return RedirectToAction("EditPlaylist", new
                 {
-                    id=epvm.playlistId
+                    id = epvm.playlistId
                 });
             }
 
@@ -410,8 +411,9 @@ namespace Music.Controllers
             // 1. playlist
             Playlist selectedPlaylist = await _db.Playlists.FindAsync(id);
             if (selectedPlaylist.isPrivate)
-                return RedirectToAction("Profile", "Users", 
-                    new {
+                return RedirectToAction("Profile", "Users",
+                    new
+                    {
                         id = selectedPlaylist.MusicUserId
                     });
 
@@ -431,5 +433,292 @@ namespace Music.Controllers
             return View(upvm);
         }
 
+
+
+        // EditPLaylistInfo -> GET
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> EditPlaylistInfo(int? id)
+        {
+            if (id == null) return NotFound();
+
+            Playlist playlistObj = await _db.Playlists.FindAsync(id);
+            if (playlistObj == null) return NotFound();
+
+            return View(playlistObj);
+        }
+
+        // EditPlaylistInfo -> POST
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditPlaylistInfo(Playlist editedPlaylist)
+        {
+            if (ModelState.IsValid && editedPlaylist.Title.ToUpper() != "FAVORITES" && editedPlaylist.Title.ToUpper() != "BLACKLIST")
+            {
+                _db.Playlists.Update(editedPlaylist);
+                await _db.SaveChangesAsync();
+                return RedirectToAction("EditPlaylist", new { id = editedPlaylist.Id });
+            }
+
+            return RedirectToAction("EditPlaylist", new { id = editedPlaylist.Id });
+        }
+
+
+
+        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        // FindRecommendations -> GET
+        [HttpGet]
+        [Authorize]
+        public IActionResult FindRecommendations()
+        {
+            // trebamo objekt (novi ViewModel) koji sadrzi sljedece:
+            // - id usera (string) -> input hidden u formi
+            // - atribut za preporuke (izvodac, kategorija ili godina pjesme) (list) -> select 
+            // -> jednom kad se odabere atribut treba se pomocu JSa generirati:
+            // -> dodatna grupa checkboxova (druga list) 
+            // -> svaki checkbox predstavlja jedno od (izvodac/kategorija/godina) koji su u favoritima
+            // - znaci da cemo trebat i (dictionary) sa kljucevima (izvodac/kategorija/godina)
+            // - taj dicitonary ce biti prazan, te se puni pjesmama nakon POST forme
+            // - znaci Dictionary<string, List<Song>> 
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            List<string> attributes = new List<string>() { "Artist", "Category", "Published" };
+
+            return View(new RecommendationsViewModel(userId, attributes));
+        }
+
+
+        #region API recommend
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetBySelectedAttribute(string attr)
+        {
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            // zelimo dohvatiti FAVORITES playlistu korisnika userId
+            Playlist myFavPlaylist = await _db.Playlists
+                .SingleOrDefaultAsync(p => p.MusicUserId == userId && p.Title == "FAVORITES");
+
+            // onda ovisno o kriteriju zelimo naci (autore, kategorije, godine) 
+            // svih pjesama koje se nalaze u toj playlisti
+
+            List<PlaylistSong> favPlaylistSongs = await _db
+                        .PlaylistSongs
+                        .Include(s => s.Song)
+                        .Where(ps => ps.PlaylistId == myFavPlaylist.Id)
+                        .ToListAsync();
+
+
+            if (attr == "Artist")
+            {
+                List<string> artists = new List<string>();
+                favPlaylistSongs.ForEach(fps =>
+                {
+                    List<string> inList = fps.Song.Artist.Split('&').ToList();
+                    inList.ForEach(inElem =>
+                    {
+                        string afterTrim = inElem.Trim();
+                        if (!artists.Contains(afterTrim))
+                            artists.Add(afterTrim);
+                    });
+                });
+
+                return Json(new { artists = artists });
+            }
+
+            else if (attr == "Category")
+            {
+                List<string> categories = new List<string>();
+                favPlaylistSongs.ForEach(fps =>
+                {
+                    List<string> inList = fps.Song.Category.Split('/').ToList();
+                    inList.ForEach(inElem =>
+                    {
+                        string afterTrim = inElem.Trim();
+                        if (!categories.Contains(afterTrim))
+                            categories.Add(afterTrim);
+                    });
+                });
+
+                return Json(new { categories = categories });
+            }
+
+            else if (attr == "Published")
+            {
+                List<int> yearsPublished = new List<int>();
+                favPlaylistSongs.ForEach(fps =>
+                {
+                    if (!yearsPublished.Contains(fps.Song.YearPublished))
+                        yearsPublished.Add(fps.Song.YearPublished);
+                });
+
+                return Json(new { yearsPublished = yearsPublished });
+            }
+
+            else
+            {
+                return RedirectToAction("EditPlaylist", myFavPlaylist.Id);
+            }
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> MyRecommendations(string attr, List<string> values)
+        {
+            // we need to find songs that somehow match values on column attr
+
+            // for example if values = ["Frank Sinatra", "Ariana Grande"]
+            // we need to return every song where artist in ["Frank Sinatra", "Ariana Grande"]
+            // but only those songs that are NOT in FAVORITES
+            // that query can be written as 
+
+            //select * from[MusicMVC].[dbo].[Songs] as song
+            //    where song.Artist in ('Frank Sinatra', 'Ariana Grande')
+            //    and song.Id not in (
+            //        select favSong.Id from[MusicMVC].[dbo].[Songs] as favSong
+            //            join[MusicMVC].[dbo].[PlaylistSongs] as playlistsong
+            //            on favSong.Id = playlistsong.SongId
+            //            join[MusicMVC].[dbo].[Playlists] as playlist
+            //            on playlistsong.PlaylistId = playlist.Id
+            //            where playlist.Title = 'FAVORITES'
+            //            and playlist.MusicUserId = '242b76e6-4492-44b5-92ce-5527aa11c4cd'
+            //    )
+
+
+            // ako zelimo i vise moramo uzeti:
+            // song.Artst like '%Frank Sinatra%' or song.Artist like 'Ariana Grande'
+
+            if (values.Count == 0)
+                return Json(new { msg = "You have to select at least one value" });
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (attr == "artist")
+            {
+                SqlParameter userIdValueParam = new SqlParameter("@userId", userId);
+
+                var parameters = new string[values.Count];
+                List<SqlParameter> valueParameters = new List<SqlParameter>();
+                for (int i = 0; i < values.Count; ++i)
+                {
+                    parameters[i] = string.Format("@v{0}", i);
+                    valueParameters.Add(new SqlParameter(parameters[i], values[i]));
+                }
+
+                valueParameters.Add(userIdValueParam);
+
+                //string rawCommand = string.Format("select * from dbo.Songs as song " +
+                //   "where song.Artist in ({0}) " +
+                //   "and song.Id not in (" +
+                //   "select favSong.Id from dbo.Songs as favSong " +
+                //   "join dbo.PlaylistSongs as playlistsong on favSong.Id = playlistsong.SongId " +
+                //   "join dbo.Playlists as playlist on playlistsong.PlaylistId = playlist.Id " +
+                //   "where playlist.Title = 'FAVORITES' " +
+                //   "and playlist.MusicUserId = @userId)",
+                //   string.Join(", ", parameters));
+
+                string rawCommand = string.Format("select * from dbo.Songs as song " +
+                  "where (song.Artist like '%' + {0} + '%' ) " +
+                  "and song.Id not in (" +
+                  "select favSong.Id from dbo.Songs as favSong " +
+                  "join dbo.PlaylistSongs as playlistsong on favSong.Id = playlistsong.SongId " +
+                  "join dbo.Playlists as playlist on playlistsong.PlaylistId = playlist.Id " +
+                  "where playlist.Title = 'FAVORITES' " +
+                  "and playlist.MusicUserId = @userId)",
+                  string.Join("+'%' or song.Artist like '%'+", parameters));
+
+
+                List<Song> recommendations = await _db
+                   .Songs
+                   .FromSqlRaw(rawCommand, valueParameters.ToArray())
+                   .ToListAsync();
+
+                return Json(new { attr = attr, recommendations = recommendations });
+            }
+
+            else if (attr == "category")
+            {
+                SqlParameter userIdValueParam = new SqlParameter("@userId", userId);
+
+                var parameters = new string[values.Count];
+                List<SqlParameter> valueParameters = new List<SqlParameter>();
+                for (int i = 0; i < values.Count; ++i)
+                {
+                    parameters[i] = string.Format("@v{0}", i);
+                    valueParameters.Add(new SqlParameter(parameters[i], values[i]));
+                }
+
+                valueParameters.Add(userIdValueParam);
+
+                string rawCommand = string.Format("select * from dbo.Songs as song " +
+                  "where (song.Category like '%' + {0} + '%' ) " +
+                  "and song.Id not in (" +
+                  "select favSong.Id from dbo.Songs as favSong " +
+                  "join dbo.PlaylistSongs as playlistsong on favSong.Id = playlistsong.SongId " +
+                  "join dbo.Playlists as playlist on playlistsong.PlaylistId = playlist.Id " +
+                  "where playlist.Title = 'FAVORITES' " +
+                  "and playlist.MusicUserId = @userId)",
+                  string.Join("+'%' or song.Category like '%'+", parameters));
+
+                List<Song> recommendations = await _db
+                   .Songs
+                   .FromSqlRaw(rawCommand, valueParameters.ToArray())
+                   .ToListAsync();
+
+                return Json(new { attr = attr, recommendations = recommendations });
+            }
+
+            else if (attr == "year_published")
+            {
+                SqlParameter userIdValueParam = new SqlParameter("@userId", userId);
+
+                List<int> valuesInt = new List<int>();
+                foreach (string valString in values)
+                    valuesInt.Add(Int32.Parse(valString));
+
+                var parameters = new string[valuesInt.Count];
+                List<SqlParameter> valueParameters = new List<SqlParameter>();
+                for (int i = 0; i < valuesInt.Count; ++i)
+                {
+                    parameters[i] = string.Format("@v{0}", i);
+                    valueParameters.Add(new SqlParameter(parameters[i], valuesInt[i]));
+                }
+
+                valueParameters.Add(userIdValueParam);
+
+                string rawCommand = string.Format("select * from dbo.Songs as song " +
+                  "where (song.YearPublished in ({0}) ) " +
+                  "and song.Id not in (" +
+                  "select favSong.Id from dbo.Songs as favSong " +
+                  "join dbo.PlaylistSongs as playlistsong on favSong.Id = playlistsong.SongId " +
+                  "join dbo.Playlists as playlist on playlistsong.PlaylistId = playlist.Id " +
+                  "where playlist.Title = 'FAVORITES' " +
+                  "and playlist.MusicUserId = @userId)",
+                  string.Join(", ", parameters));
+
+
+                List<Song> recommendations = await _db
+                   .Songs
+                   .FromSqlRaw(rawCommand, valueParameters.ToArray())
+                   .ToListAsync();
+
+                return Json(new { attr = attr, recommendations = recommendations });
+            }
+
+
+            else
+            {
+                return Json(new { msg = "Error processing request" });
+            }
+        }
+
+        #endregion
+
     }
 }
+
+
+
