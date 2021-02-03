@@ -20,7 +20,6 @@ To do:
 <ul>
   <li>Do sth \w homepage (needs more brainstorming)</li>
   <li>Add options for users (pics, status, favorite categories, ...)</li>
-  <li>Connect users with the same 'taste' ("FAVORITES" playlist) feature</li>
   <li>Admin users maybe? (only them  could add, edit or remove songs)</li>
   <li>Remove like/dislike button on already liked/disliked songs</li>
   <li>Ability to send emails (or other type of chat/forum) to other users and talk about music (needs more brainstorming)</li>
