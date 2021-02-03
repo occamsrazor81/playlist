@@ -1,8 +1,11 @@
 ﻿@model List<Music.ViewModels.UserViewModel>
 
-
-<h2>Community</h2>
-
+<div class="d-flex">
+    <h2 class="col-3">Community</h2>
+    <a class="col-4 offset-5 text-decoration-none btn btn-outline-info font-italic" asp-action="FindConnections">
+     <i class="fas fa-link"></i> &nbsp; Find connections
+    </a>
+</div>
 <br />
 
 <table class="table table-bordered text-center w-100 text-light">
@@ -10,7 +13,7 @@
         <tr>
             <th>First Name</th>
             <th>Last Name</th>
-            <th>email</th>
+            <th>e-mail</th>
         </tr>
     </thead>
     <tbody>
