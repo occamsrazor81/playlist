@@ -13,7 +13,17 @@ function loadData() {
             "datatype": "json"
         },
         "columns": [
-            { "data": "title", "width": "70%" },
+            {
+                "data": "title", "width": "70%",
+                "fnCreatedCell": function (nTd, sData, oData, iRow, iCol) {
+                    if (oData.isPrivate)
+                        $(nTd).html(
+                            "<i class='fas fa-key'></i> &nbsp;" + oData.title
+                        );
+                    else $(nTd).html(
+                        "<i class='far fa-eye'> &nbsp;" + oData.title + "</i>")
+                }
+            },
             {
                 "data": { "id": "id", "title": "id" },
                 "render": function (data) {

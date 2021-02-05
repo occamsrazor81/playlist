@@ -201,7 +201,7 @@ function findRecommendationsRequest(event) {
 
                 for (var i = 0; i < data.recommendations.length; ++i) {
 
-                    var tr = $("<tr></tr>");
+                    var tr = $('<tr id="' + data.recommendations[i].id + '"></tr>');
 
                     var tdTitle = $("<td></td>");
                     var tdArtist = $("<td></td>");
@@ -209,7 +209,7 @@ function findRecommendationsRequest(event) {
                     var tdPublished = $("<td></td>");
                     var tdOption = $("<td style='max-width:150px'></td>");
 
-                    var titleLink = $('<a href="' + data.recommendations[i].link +'" class="text-decoration-none text-info"></a>');
+                    var titleLink = $('<a href="' + data.recommendations[i].link + '" class="text-decoration-none text-info"></a>');
 
                     titleLink.html(data.recommendations[i].title);
                     tdArtist.html(data.recommendations[i].artist);
@@ -235,7 +235,7 @@ function findRecommendationsRequest(event) {
                     var iconThumbsDown = $('<i class="fas fa-thumbs-down"></i>');
 
                     aLike.append(iconThumbsUp);
-                    aDislike.append(iconThumbsDown);                    
+                    aDislike.append(iconThumbsDown);
 
                     divLike.append(aLike);
                     divDislike.append(aDislike);
@@ -260,7 +260,7 @@ $("body").on("click", ".like", like);
 $("body").on("click", ".dislike", dislike);
 
 function like(event) {
-    var id = $(this).attr("id").replace("#", "");   
+    var id = $(this).attr("id").replace("#", "");
 
     var url = '/Songs/Like?id=' + id;
 
@@ -276,6 +276,8 @@ function like(event) {
                     confirmButtonText: '<i class="fas fa-thumbs-up"></i> &nbsp; OK',
                     confirmButtonColor: data.color
                 });
+
+                $("#" + id).remove();
             }
 
             else Swal.fire({
@@ -306,6 +308,8 @@ function dislike(event) {
                     confirmButtonText: '<i class="fas fa-thumbs-down"></i> &nbsp; OK',
                     confirmButtonColor: data.color
                 });
+
+                $("#" + id).remove();
             }
 
             else Swal.fire({
