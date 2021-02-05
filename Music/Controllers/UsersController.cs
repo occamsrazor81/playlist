@@ -10,7 +10,10 @@ using Music.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Mail;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Music.Controllers
@@ -29,6 +32,7 @@ namespace Music.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> Index()
         {
@@ -51,6 +55,7 @@ namespace Music.Controllers
             return View(otherUsers);
         }
 
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> Profile(string id)
         {
@@ -74,6 +79,8 @@ namespace Music.Controllers
             return View(selectedUser);
         }
 
+        [HttpGet]
+        [Authorize]
         public async Task<IActionResult> FindConnections()
         {
             // we want all users that have in their FAVORITES at least 
@@ -215,6 +222,60 @@ namespace Music.Controllers
                     new SimilarUsersViewModel(kvp.Key, kvp.Value.Item1, kvp.Value.Item2));
 
             return View(similarUsers);
+        }
+
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> SendEmail(string id)
+        {
+            string myId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            MusicUser myInfo = await _authDb.Users.SingleAsync(u => u.Id == myId);
+            MusicUser recepientInfo = await _authDb.Users.SingleAsync(u => u.Id == id);
+
+            SendEmailViewModel mailInfo = new SendEmailViewModel(recepientInfo.Id, myInfo.Email, recepientInfo.Email);
+
+            return View(mailInfo);
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        public IActionResult SendEmail(SendEmailViewModel emailInfo)
+        {
+
+            if(ModelState.IsValid)
+            {
+                MailMessage message = new MailMessage(emailInfo.EmailFrom, emailInfo.EmailTo, emailInfo.Subject, emailInfo.Body);
+
+                message.SubjectEncoding = Encoding.UTF8;
+                message.BodyEncoding = Encoding.UTF8;
+
+                SmtpClient client = new SmtpClient("smtp.gmail.com", 587)
+                {
+                    Credentials = new NetworkCredential("myusername@gmail.com", "mypwd"),
+                    EnableSsl = true
+                };
+                // client.UseDefaultCredentials = true;
+                //NetworkCredential basicAuthenticationInfo = new
+                //   NetworkCredential("username", "password");
+                //client.Credentials = basicAuthenticationInfo;
+
+                try
+                {
+                    client.Send(message);
+                }
+                catch (SmtpException smptEx) {
+                    throw new ApplicationException("Smtp exception: " + smptEx.Message);
+                }
+
+                return RedirectToAction("Profile", new { id = emailInfo.RecepientId });
+
+            }
+
+            else {
+                return View(emailInfo);
+            }
         }
     }
 }

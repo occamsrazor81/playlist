@@ -382,6 +382,8 @@ namespace Music.Controllers
                 await _db.SaveChangesAsync();
 
 
+                //return Json(new { id = epvm.playlistId, successMsg = "Song removed from playlist" });
+
                 return RedirectToAction("EditPlaylist", new
                 {
                     id = epvm.playlistId
@@ -390,6 +392,7 @@ namespace Music.Controllers
 
             else
             {
+                // return Json(new { id = epvm.playlistId, errorMsg = "Error processing your request" });
                 return RedirectToAction("EditPlaylist", new
                 {
                     id = epvm.playlistId
@@ -397,6 +400,10 @@ namespace Music.Controllers
             }
 
         }
+
+
+
+
 
         [Authorize]
         public async Task<IActionResult> LookAt(int? id)
@@ -716,6 +723,30 @@ namespace Music.Controllers
         }
 
         #endregion
+
+
+        #region removesinglesong
+
+        [Authorize]
+        [HttpDelete]
+        public async Task<IActionResult> RemoveSingleSong(int playlistId, int songId)
+        {
+
+            PlaylistSong ps = new PlaylistSong
+            {
+                PlaylistId = playlistId,
+                SongId = songId
+            };
+
+            _db.PlaylistSongs.Remove(ps);
+            await _db.SaveChangesAsync();
+
+
+            return Json(new { successMsg = "Song removed from playlist" });
+
+        }
+
+        #endregion  
 
     }
 }
