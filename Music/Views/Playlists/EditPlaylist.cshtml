@@ -90,7 +90,7 @@ else
             <tbody>
                 @foreach (var playlistSong in Model.editPlaylist.PlaylistSongs)
                 {
-                    <tr>
+                    <tr id="@playlistSong.Song.Id">
                         <td>
                             <a href="@playlistSong.Song.Link" class="text-decoration-none text-info">
                                 @playlistSong.Song.Title
@@ -101,7 +101,7 @@ else
                         <td>@playlistSong.Song.YearPublished</td>
                         <td>
 
-                            <form method="post" asp-action="RemoveSingleSong">
+                            @*<form method="post" asp-action="RemoveSingleSong">
                                 <div class='text-center'>
                                     <button type="submit"
                                             class='btn btn-outline-danger'
@@ -113,7 +113,17 @@ else
                                 <span class="text-danger" asp-validation-for="@Model.playlistId"></span>
                                 <input type="hidden" asp-for="@Model.songId" value="@playlistSong.Song.Id" />
                                 <span class="text-danger" asp-validation-for="@Model.songId"></span>
-                            </form>
+                            </form>*@
+
+                            <div class='text-center'>
+                                <button id="@playlistSong.Song.Id+_+@Model.editPlaylist.Id"
+                                        class='btn btn-outline-danger removeBtn'
+                                        style='cursor:pointer; width:75px;'>
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                                @*<input type="hidden" id="@playlistSong.Song.Id" />
+                                <input type="hidden" id="@Model.editPlaylist.Id" />*@
+                            </div>
                         </td>
                     </tr>
                 }
@@ -132,5 +142,8 @@ else
         <p>At the moment there are no songs in this playlist.</p>
     }
 
-
 </div>
+
+@section Scripts{ 
+<script src="~/js/removeSingleSongFromPlaylist.js"></script>
+}
