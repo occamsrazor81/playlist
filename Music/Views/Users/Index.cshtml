@@ -1,33 +1,36 @@
 ﻿@model List<Music.ViewModels.UserViewModel>
 
-<div class="d-flex">
-    <h2 class="col-3">Community</h2>
-    <a class="col-4 offset-5 text-decoration-none btn btn-outline-info font-italic" asp-action="FindConnections">
-     <i class="fas fa-link"></i> &nbsp; Find connections
-    </a>
-</div>
-<br />
+    <div class="p-3 container">
+        <div class="row pt-4">
+            <h2 class="col-3">Community</h2>
+            <a class="col-4 offset-5 text-decoration-none btn btn-outline-info font-italic" asp-action="FindConnections">
+                <i class="fas fa-link"></i> &nbsp; Find connections
+            </a>
+        </div>
+        <br /> <br />
 
-<table class="table table-bordered text-center w-100 text-light">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>e-mail</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var uvm in Model)
-        {
-        <tr>
-            <td>@uvm.FirstName</td>
-            <td>@uvm.LastName</td>
-            <td>
-                <a class="text-info text-decoration-none"
-                   asp-controller="Users" asp-action="Profile" 
-                   asp-route-id="@uvm.Id">@uvm.Email</a>
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
+        <table class="table table-bordered text-center w-100 text-light">
+            <thead>
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>e-mail</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var uvm in Model)
+                {
+                    <tr>
+                        <td>@uvm.FirstName</td>
+                        <td>@uvm.LastName</td>
+                        <td>
+                            <a class="text-info text-decoration-none"
+                               asp-controller="Users" asp-action="Profile"
+                               asp-route-id="@uvm.Id">@uvm.Email</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>

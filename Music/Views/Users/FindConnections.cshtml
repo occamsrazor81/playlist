@@ -1,7 +1,14 @@
 ﻿
 @model IEnumerable<Music.ViewModels.SimilarUsersViewModel>
 
-<h2 class="my-4">Similar users</h2>
+
+<div class="d-flex">
+    <h2 class="col-5">Similar Users</h2>
+    <a class="col-4 offset-3 text-decoration-none btn btn-outline-secondary font-italic" asp-action="Index">
+        <i class="fas fa-backward"></i> &nbsp;  Back
+    </a>
+</div>
+<br />
 
 @if (Model.Count() > 0)
 {
@@ -31,10 +38,10 @@
                             @foreach (Song commonSong in similarUser.SongsInCommon)
                             {
                                 <li style="list-style-type:none" class="text-center">
-                                   <a href="@commonSong.Link"
-                                      class="text-decoration-none text-primary">
-                                    @commonSong.Title
-                                   </a>
+                                    <a href="@commonSong.Link"
+                                       class="text-decoration-none text-primary">
+                                        @commonSong.Title
+                                    </a>
                                 </li>
                             }
                         </ul>
@@ -42,5 +49,5 @@
                 </tr>
             }
         </tbody>
-        </table>
+    </table>
 }
